@@ -12,7 +12,7 @@ const router = Router();
 router.route("/").post(verifyToken, upload.single("image"), addBlog);
 router.route("/:id").put(verifyToken, updateBlog);
 router.route("/").get(getBlogs);
-router.route("/:dashboard").get(verifyToken, getBlogsByAdmin);
+router.route("/dashboard").get(verifyToken, getBlogsByAdmin);
 router.route("/:slug").get(getBlogBySlug);
 router.route("/:id").delete(verifyToken, deleteBlog);
 
