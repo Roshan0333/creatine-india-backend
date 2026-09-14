@@ -483,6 +483,9 @@ export const getBlogs = async (req, res) => {
             ? {
                 $or: [
                     {
+                        status: true
+                    },
+                    {
                         slug: {
                             $regex: search,
                             $options: "i",
@@ -641,6 +644,103 @@ export const deleteBlog = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Failed to delete blog.",
+            error: err.message,
+        });
+    }
+};
+
+export const getBlogsByAdmin = async (req, res) => {
+    try {
+        const page = Math.max(
+            parseInt(req.query.page) || 1,
+            1
+        );
+
+        const limit = Math.max(
+            parseInt(req.query.limit) || 10,
+            1
+        );
+
+        const search = req.query.search?.trim() || "";
+
+        const skip = (page - 1) * limit;
+
+        const filter = search
+            ? {
+                $or: [
+                    {
+                        slug: {
+                            $regex: search,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        title: {
+                            $regex: search,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        description: {
+                            $regex: search,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        content: {
+                            $regex: search,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        "seo.metaTitle": {
+                            $regex: search,
+                            $options: "i",
+                        },
+                    },
+                    {
+                        "seo.metaDescription": {
+                            $regex: search,
+                            $options: "i",
+                        },
+                    },
+                ],
+            }
+            : {};
+
+        const [blogs, totalBlogs] = await Promise.all([
+            blogModel
+                .find(filter)
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+
+            blogModel.countDocuments(filter),
+        ]);
+
+        const totalPages = Math.ceil(
+            totalBlogs / limit
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Blogs fetched successfully.",
+            data: blogs,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalBlogs,
+                limit,
+                hasNextPage: page < totalPages,
+                hasPreviousPage: page > 1,
+            },
+        });
+    } catch (err) {
+        console.error("Get blogs error:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch blogs.",
             error: err.message,
         });
     }

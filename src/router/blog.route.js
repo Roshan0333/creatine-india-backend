@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
-import {addBlog, getBlogBySlug, getBlogs,updateBlog, deleteBlog} from "../controller/blog.controller.js";
+import {addBlog, getBlogBySlug, getBlogsByAdmin, getBlogs,updateBlog, deleteBlog} from "../controller/blog.controller.js";
 import {verifyToken} from "../middleware/adminRequired.js"
 
 
@@ -12,7 +12,7 @@ const router = Router();
 router.route("/").post(verifyToken, upload.single("image"), addBlog);
 router.route("/:id").put(verifyToken, updateBlog);
 router.route("/").get(getBlogs);
-router.route("/:dashboard").get(verifyToken, getBlogs);
+router.route("/:dashboard").get(verifyToken, getBlogsByAdmin);
 router.route("/:slug").get(getBlogBySlug);
 router.route("/:id").delete(verifyToken, deleteBlog);
 
