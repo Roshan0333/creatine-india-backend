@@ -18,7 +18,6 @@ router.route("/:id").put(verifyToken, upload.fields([
 ]), updateFlavour);
 router.route("/:id").delete(verifyToken, deleteFlavour);
 router.route("/dashboard").get(verifyToken, getAllFlavourByAdmin);
-router.route("/").get(verifyToken, getAllFlavourByAdmin);
 router.route("/").get(getAllFlavour);
 router.route("/search").get(searchFlavours);
 
